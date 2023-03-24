@@ -11,10 +11,13 @@ from aiogram.dispatcher.filters import Command
 from API import get_matches
 import asyncio
 import time
-import threading
+import os
+from dotenv import load_dotenv, find_dotenv
 
 
-bot = Bot(token="5958097205:AAGSO6JqeiJN6CQNtrdkWtnEhbdExewXSaU", parse_mode=types.ParseMode.HTML)
+load_dotenv(find_dotenv())
+
+bot = Bot(token=os.getenv('TOKEN_BOT'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
 
@@ -75,13 +78,15 @@ dp.register_callback_query_handler(select_date_handler, select_date_callback.fil
 dp.register_message_handler(start, Command("start"))
 
 
-def start_polling_bot():
-    executor.start_polling(dp, skip_updates=True, timeout=3000)
-
-
 def main():
-    bot_update_thread = threading.Thread(target=start_polling_bot)
-    bot_update_thread.start()
+    while True:
+        try:
+            executor.start_polling(dp, skip_updates=True, timeout=3000)
+            time.sleep(10)
+            bot.get_updates(timeout=1200)
+        except (TimeoutError, ConnectionError, ConnectionResetError):
+            time.sleep(10)
+            continue
 
 
 if __name__ == "__main__":

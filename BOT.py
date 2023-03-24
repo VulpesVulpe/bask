@@ -11,9 +11,13 @@ from aiogram.dispatcher.filters import Command
 from API import get_matches
 import asyncio
 import time
+import os
+from dotenv import load_dotenv, find_dotenv
 
 
-bot = Bot(token="5958097205:AAGSO6JqeiJN6CQNtrdkWtnEhbdExewXSaU", parse_mode=types.ParseMode.HTML)
+load_dotenv(find_dotenv())
+
+bot = Bot(token=os.getenv('TOKEN_BOT'), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
 

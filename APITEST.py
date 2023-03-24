@@ -1,10 +1,14 @@
 import requests
 import json
-from LOGTEST import TOKEN_API, headers
+from LOG import headers
 from datetime import datetime, timedelta
 import math
 import time
+import os
+from dotenv import load_dotenv, find_dotenv
 
+
+load_dotenv(find_dotenv())
 
 def sleep(timeout, retry=6):
     def the_real_decorator(function):
@@ -32,7 +36,7 @@ def get_matches(selected_date):
     result_data = []
     print("Гэт матчес запущен")
     url = f"https://api.b365api.com/v3/events/upcoming?sport_id=18&skip_esports=1&day={selected_date}&page=1" \
-          f"&token={TOKEN_API}"
+          f"&token={os.getenv('TOKEN_API')}"
     s = requests.Session()
     response = s.get(url=url, headers=headers, timeout=200)
     games = response.json()
@@ -40,7 +44,7 @@ def get_matches(selected_date):
     for page_count in range(1, pagination_count + 1):
         s = requests.Session()
         url = f"https://api.b365api.com/v3/events/upcoming?sport_id=18&skip_esports=1&day={selected_date}" \
-              f"&page={page_count}&token={TOKEN_API}"
+              f"&page={page_count}&token={os.getenv('TOKEN_API')}"
         r = s.get(url=url, headers=headers, timeout=200)
         data = r.json()
         matches = data.get("results")
@@ -54,7 +58,7 @@ def get_matches(selected_date):
                 sr_handi_book = 'No'
                 try:
                     s = requests.Session()
-                    url_odds = f"https://api.b365api.com/v2/event/odds/summary?token={TOKEN_API}" \
+                    url_odds = f"https://api.b365api.com/v2/event/odds/summary?token={os.getenv('TOKEN_API')}" \
                                f"&event_id={match_id}"
                     r_odds = s.get(url=url_odds, headers=headers, timeout=500)
                     print(r_odds.status_code)
@@ -112,7 +116,7 @@ def get_matches(selected_date):
                 link = f"https://bsportsfan.com/r/{match_id}/{match.get('home').get('name')}-vs-" \
                        f"{match.get('away').get('name')}"
                 league_id = int(match.get("league").get("id"))
-                url = f"https://api.b365api.com/v1/event/history?token={TOKEN_API}&event_id={match_id}&qty=20"
+                url = f"https://api.b365api.com/v1/event/history?token={os.getenv('TOKEN_API')}&event_id={match_id}&qty=20"
                 r = s.get(url=url, headers=headers, timeout=100)
                 data = r.json()
                 try:
